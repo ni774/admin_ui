@@ -17,9 +17,9 @@ function Users(props) {
                     <input
                         type="text"
                         name='name'
-                        value= {user.name}
+                        value= {name}
                         onChange={(e) => setName(e.target.value)}
-                        desabled={false}
+                        disabled= {false}
                     />
                 </td>
                 <td><input type='text' value={user.email}/></td>
