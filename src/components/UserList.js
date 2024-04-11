@@ -4,35 +4,53 @@ import Users from './Users';
 import Pagination from '@mui/material/Pagination';
 import { usePagination } from '../hooks/Pagination';
 
-import { Data } from '../data'; 
 
-function UserList() {
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+import usersData from '../data';
+// ! import {edit} from '../utility/helper'; 
 
-  console.log("usersDAta",Data)
+function UserList(searchKeywords, setSearchKeywords) {
+  const [users, setUsers] = useState(usersData);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // update users data to user list
+  const edit = (id,name,email,role)=> {
+    console.log("edited",id);
+    const newUsers = users.map((currElement) => {
+        if (currElement.id === id) {
+            return { ...currElement,
+              name: name,
+              email: email,
+              role: role,
+            };
+        } else {
+            return currElement;
+        }
+    });
+    // console.log("newUsers",newUsers);
+    setUsers(newUsers);
+  }
 
+  const deleteCurrentUser = (id) => {
+    const updatedUsers = users.filter((user) => user.id !== id);
+    setUsers(updatedUsers);
+  }
+  
 
-
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const response = await axios.get('https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json');
-        setUsers(response.data); // Update state with fetched data
-        console.log("res",response.data);
-        setIsLoading(false); // Set loading to false after data is fetched
-      } catch (error) {
-        console.log(error);
-      }
+  const filteredUsers = users.filter(user => {
+    if(searchKeywords == "")return user;
+    else{
+      return user.name.includes(searchKeywords) || user.email.includes(searchKeywords) || user.role.includes(searchKeywords)
     }
+  });
 
-    fetchUsers(); // Call the async function to fetch data
-  }, []); // Empty dependency array ensures this effect runs only once
+  useEffect((id)=>{
+    deleteCurrentUser(id);
+  },[]);
+  
+  
 
-
-  console.log("users",users)
   const totalRecords = users.length;
+  console.log("total records",totalRecords);
   const perPageRecords = 10;
 
   const totalPages = Math.ceil(totalRecords / perPageRecords);
@@ -67,7 +85,13 @@ function UserList() {
             </thead>
             <tbody>
               {users.slice(startIndx, endIndx).map((user, i) => (
-                <Users key={i} user={user}/>
+                <Users key={i}
+                 user={user}
+                 editcurrentUser={edit}
+                 deleteCurrentUser= {deleteCurrentUser}
+                 searchKeywords
+                 setSearchKeywords
+                />
               ))}
             </tbody>
           </table>

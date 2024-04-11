@@ -277,4 +277,4 @@ const usersData = [
     }
 ]
 
-export const Data = usersData
+export default usersData;

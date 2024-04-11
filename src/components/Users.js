@@ -1,11 +1,30 @@
 import React,{useState} from 'react';
 // import DeleteIcon from '@mui/icons-material/Delete';
 
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
 function Users(props) {
-    const user = props.user;  // isAllchecked, name, email, password
+    const user = props.user;  // isAllchecked, name, email, password, edit fn, delete fn
     const [value, setValue] = useState("");
     const [checkbox, setCheckbox] = useState(true);
-    const [name, setName] = useState(user.name);
+    const [name, setName] = useState(props.user.name);
+    const [email, setEmail] = useState(props.user.email);
+    const [role, setRole] = useState(props.user.role);
+    const [openEditing, setOpenEditing] = useState(false)
+    const [inputDisabled, setInputDisabled] = useState(true);
+
+
+    // edit user
+    const editUser = ()=> {
+        props.editcurrentUser(props.user.id,name, email, role);
+        setOpenEditing(false); // ensure that edit button is enabled
+    }
+
+    // delete single user
+    const deleteUser = ()=> {
+        props.deleteCurrentUser(props.user.id);
+    }
   
   return (
     <div style={{border:'1px solid black'}}>
@@ -17,14 +36,44 @@ function Users(props) {
                     <input
                         type="text"
                         name='name'
-                        value= {name}
+                        value={name} 
+                        // value= {openEdit?name:props.user.name}
                         onChange={(e) => setName(e.target.value)}
-                        disabled= {false}
+                        disabled= {inputDisabled}
                     />
                 </td>
-                <td><input type='text' value={user.email}/></td>
-                <td><input type='text' value={user.role}/></td>
-                <td><span className='edit'>edit</span> <span className='delete'>delete</span></td>
+                <td>
+                    <input type='text'
+                        name='email'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled= {inputDisabled}
+                    />
+                </td>
+                <td>
+                    <input type='text'
+                        name='role'
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        disabled= {inputDisabled}
+                    />
+                </td>
+                {
+                    // if editing buttong is not opened then show simple data list other wise open editing form
+                    openEditing?   
+                    <td><button onClick={(e)=>{
+                        e.preventDefault();
+                        editUser();
+                    }}>Edit</button></td>
+                    :
+                    <td>
+                        <span className='edit' onClick={()=>{
+                            setOpenEditing(true)   // when click to edit user e
+                        }}><EditIcon/></span> 
+                        <span className='delete' onClick={deleteUser}><DeleteOutlineIcon/></span>
+                    </td>
+                }
+                
             </tr>
         </table>
         </form>
