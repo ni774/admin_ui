@@ -30,20 +30,39 @@ function UserList(searchKeywords, setSearchKeywords) {
     setUsers(newUsers);
   }
 
+  // console.log("filteredUsers",filteredUsers);
+
   const deleteCurrentUser = (id) => {
     console.log("deleteCurrentUser",id);
     const updatedUsers = users.filter((user) => user.id !== id);
     console.log("updatedUsers after delete",updatedUsers);
     setUsers(updatedUsers);
   }
-  
 
-  const filteredUsers = users.filter(user => {
-    if(searchKeywords == "")return user;
-    else{
-      return user.name.includes(searchKeywords) || user.email.includes(searchKeywords) || user.role.includes(searchKeywords)
+  
+ //...........................SEARCH FUNCTIONALITY.................. 
+  useEffect(()=>{
+    const searchInput = searchKeywords.searchKeywords.toLowerCase();
+    const filteredUsers = (usersData) => {
+      let newArray = [];
+      for(let i=0;i<usersData.length;i++) {
+        if(usersData[i].name?.toLowerCase().includes(searchInput) || usersData[i].email?.toLowerCase().includes(searchInput) || usersData[i].role?.toLowerCase().includes(searchInput)){
+          newArray.push(usersData[i]);
+        }
+        console.log("searched");
+      }
+      console.log("newArray",newArray)
+      return newArray;
     }
-  });
+    console.log("searchinput",searchKeywords)
+    console.log(searchInput.length,"length");
+    if(searchInput.length > 0){
+      console.log("filteredUsers",filteredUsers(users));
+      setUsers(filteredUsers(usersData)); // search in original whole data instead of
+      //setUsers(filteredUsers(usersData));
+    }
+  },[searchKeywords.searchKeywords.length])
+    
 
   //check multiple users
   const handleChange=(e)=>{ 
@@ -75,12 +94,6 @@ function UserList(searchKeywords, setSearchKeywords) {
         alert("Please select at least one checkbox");
     }
   }
-
-
-  // useEffect(()=>{
-  //    filteredUsers();
-  // },[])
-
   
   
 
@@ -108,13 +121,13 @@ function UserList(searchKeywords, setSearchKeywords) {
         <p>Loading...</p>
       ) : (
         <>
-          <table>
+          <table className='mx-3 my-3'>
             <thead>
               <tr style={{display:'flex', justifyContent:'space-between', gap:'15rem'}}>
                 <th><input type="checkbox" name="allselect" checked= { !users.slice(startIndx,endIndx).some( (user)=>user?.isChecked!==true)} onChange={ handleChange}  /> </th>
                 <th>Name</th>
-                <th>Role</th>
                 <th>Email</th>
+                <th>role</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -132,13 +145,15 @@ function UserList(searchKeywords, setSearchKeywords) {
               ))}
             </tbody>
           </table>
-          <div>
-            <button onClick={handleAllDelete}>Delete Selected</button>
+          <div style={{display:'flex', justifyContent:'flex-start'}}>
+            <button onClick={handleAllDelete} className='bg-red-500 m-3 rounded-xl p-1'>Delete Selected</button>
+            <span style={{margin:'auto'}}>
             <Pagination 
               color='primary' 
               count={totalPages}
               onChange={(event, value) => setDisplayPage(value)}
             />
+            </span>
           </div>
         </>
       )}

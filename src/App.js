@@ -3,9 +3,12 @@ import './App.css';
 import Search from './components/Search';
 import UserList from './components/UserList';
 import Footer from './components/Footer';
+import usersData from './data';
 
 function App() {
   const [searchKeywords, setSearchKeywords] = useState("");
+
+
   return (
     <div className="App">
       <Search
