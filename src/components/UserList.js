@@ -31,7 +31,9 @@ function UserList(searchKeywords, setSearchKeywords) {
   }
 
   const deleteCurrentUser = (id) => {
+    console.log("deleteCurrentUser",id);
     const updatedUsers = users.filter((user) => user.id !== id);
+    console.log("updatedUsers after delete",updatedUsers);
     setUsers(updatedUsers);
   }
   
@@ -43,9 +45,42 @@ function UserList(searchKeywords, setSearchKeywords) {
     }
   });
 
-  useEffect((id)=>{
-    deleteCurrentUser(id);
-  },[]);
+  //check multiple users
+  const handleChange=(e)=>{ 
+    const { name, checked}= e.target;
+    if(name==="allselect"){
+      const checkedvalue = users.map( (user,index)=>{
+        if(index >=startIndx && index < endIndx){
+         return {...user, isChecked:checked}
+        }
+        else return user;
+      });
+      console.log(checkedvalue);
+      setUsers(checkedvalue);
+    } else{
+     const checkedvalue= users.map( (user)=>
+     user.name ===name? {...user, isChecked:checked}:user);
+     console.log(checkedvalue);
+     setUsers(checkedvalue);
+    }
+  }
+
+  //delete all user which are checked
+  const handleAllDelete = async (e) => {
+    e.preventDefault();
+    const newUsers = users.filter(user => !user.isChecked);
+    if (newUsers.length < users.length) {
+        setUsers(newUsers);
+    } else {
+        alert("Please select at least one checkbox");
+    }
+  }
+
+
+  // useEffect(()=>{
+  //    filteredUsers();
+  // },[])
+
   
   
 
@@ -76,7 +111,7 @@ function UserList(searchKeywords, setSearchKeywords) {
           <table>
             <thead>
               <tr style={{display:'flex', justifyContent:'space-between', gap:'15rem'}}>
-                <th><input type='checkbox' /></th>
+                <th><input type="checkbox" name="allselect" checked= { !users.slice(startIndx,endIndx).some( (user)=>user?.isChecked!==true)} onChange={ handleChange}  /> </th>
                 <th>Name</th>
                 <th>Role</th>
                 <th>Email</th>
@@ -91,15 +126,20 @@ function UserList(searchKeywords, setSearchKeywords) {
                  deleteCurrentUser= {deleteCurrentUser}
                  searchKeywords
                  setSearchKeywords
+                 handleChange= {handleChange}  // passing checked to individual components
+                //  handleDelete = {handleAllDelete}
                 />
               ))}
             </tbody>
           </table>
-          <Pagination 
-            color='primary' 
-            count={totalPages}
-            onChange={(event, value) => setDisplayPage(value)}
-          />
+          <div>
+            <button onClick={handleAllDelete}>Delete Selected</button>
+            <Pagination 
+              color='primary' 
+              count={totalPages}
+              onChange={(event, value) => setDisplayPage(value)}
+            />
+          </div>
         </>
       )}
     </div>

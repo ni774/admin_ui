@@ -13,6 +13,7 @@ function Users(props) {
     const [role, setRole] = useState(props.user.role);
     const [openEditing, setOpenEditing] = useState(false)
     const [inputDisabled, setInputDisabled] = useState(true);
+    const [isDeleted, setIsDeleted] = useState(false);
 
 
     // edit user
@@ -22,8 +23,16 @@ function Users(props) {
     }
 
     // delete single user
-    const deleteUser = ()=> {
-        props.deleteCurrentUser(props.user.id);
+    const deleteUser = () => {
+       console.log("user deleted",props.user);
+       props.deleteCurrentUser(props.user.id);
+    }
+    
+    
+    
+
+    const handleChange = (e)=> {
+        props.handleChange();
     }
   
   return (
@@ -31,7 +40,7 @@ function Users(props) {
         <form>
         <table >
             <tr style={{display:'flex', justifyContent:'space-between', gap:'12rem'}}>
-                <td><input type='checkbox' name='checkvlaue'/></td>
+                <td><input type="checkbox" name={ props.user.name} checked={props.user?.isChecked|| false } onChange={ props.handleChange }  /></td>
                 <td> 
                     <input
                         type="text"
