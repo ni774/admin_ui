@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import './App.css';
 import Search from './components/Search';
 import UserList from './components/UserList';
-import Footer from './components/Footer';
 import usersData from './data';
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
         searchKeywords={searchKeywords}
         setSearchKeywords={setSearchKeywords}
       />
-      <Footer/>
 
     </div>
   );

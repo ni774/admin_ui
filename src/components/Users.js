@@ -1,19 +1,14 @@
 import React,{useState} from 'react';
-// import DeleteIcon from '@mui/icons-material/Delete';
-
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 function Users(props) {
-    const user = props.user;  // isAllchecked, name, email, password, edit fn, delete fn
-    const [value, setValue] = useState("");
-    const [checkbox, setCheckbox] = useState(true);
+    // props:- isAllchecked, name, email, password, edit fn, delete fn
     const [name, setName] = useState(props.user.name);
     const [email, setEmail] = useState(props.user.email);
     const [role, setRole] = useState(props.user.role);
     const [openEditing, setOpenEditing] = useState(false)
     const [inputDisabled, setInputDisabled] = useState(true);
-    const [isDeleted, setIsDeleted] = useState(false);
 
 
     // edit user
@@ -30,19 +25,15 @@ function Users(props) {
        props.deleteCurrentUser(props.user.id);
     }
       
-
-    const handleChange = (e)=> {
-        props.handleChange();
-    }
   
   return (
     <div className='border-y-2 border-solid'>
         <form>
         <table className=''>
-            <tr className='border-black p-3 flex justify-between' style={{display:'flex', justifyContent:'space-between', gap:'12rem'}}>
+            <tr className='border-black p-3 flex justify-between' style={{display:'flex', justifyContent:'space-between', gap:'10rem'}}>
                 <td><input type="checkbox" name={ props.user.name} checked={props.user?.isChecked|| false } onChange={ props.handleChange }  /></td>
-                <td> 
-                    <input
+                <td className={`'w-48' ${openEditing ? 'border-2' : ''}`}> 
+                    <input className='text-center'
                         type="text"
                         name='name'
                         // value={name}
@@ -51,7 +42,7 @@ function Users(props) {
                         disabled= {inputDisabled}
                     />
                 </td>
-                <td>
+                <td className={`'w-48' ${openEditing ? 'border-2' : ''}`}>
                     <input type='text'
                         name='email'
                         // value={email}
@@ -60,8 +51,8 @@ function Users(props) {
                         disabled= {inputDisabled}
                     />
                 </td>
-                <td>
-                    <input type='text'
+                <td className={`'w-48' ${openEditing ? 'border-2' : ''}`} >
+                    <input type='text' className="text-center" style={{textAlign: 'center'}}
                         name='role'
                         // value={role}
                         value= {openEditing?role:props.user.role}
@@ -72,13 +63,13 @@ function Users(props) {
                 {
                     // if editing buttong is not opened then show simple data list other wise open editing form
                     openEditing?   
-                    <td><button className= 'border-2 rounded-md bg-slate-400'
+                    <td><button className= ' w-14 border-2 rounded-md bg-blue-500'
                         onClick={(e)=>{
                         e.preventDefault();
                         editUser();
                     }}>Edit</button></td>
                     :
-                    <td>
+                    <td className='w-48'>
                         <span className='edit' onClick={()=>{
                             //enable editing
                             setInputDisabled(false);

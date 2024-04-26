@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Users from './Users';
 import Pagination from '@mui/material/Pagination';
 import { usePagination } from '../hooks/Pagination';
 
 
 import usersData from '../data';
-// ! import {edit} from '../utility/helper'; 
 
 function UserList(searchKeywords, setSearchKeywords) {
   const [users, setUsers] = useState(usersData);
@@ -32,7 +30,7 @@ function UserList(searchKeywords, setSearchKeywords) {
 
   // console.log("filteredUsers",filteredUsers);
 
-  const deleteCurrentUser = (id) => {
+  const deleteCurrentUser = async (id) => {
     console.log("deleteCurrentUser",id);
     const updatedUsers = users.filter((user) => user.id !== id);
     console.log("updatedUsers after delete",updatedUsers);
@@ -49,13 +47,9 @@ function UserList(searchKeywords, setSearchKeywords) {
         if(usersData[i].name?.toLowerCase().includes(searchInput) || usersData[i].email?.toLowerCase().includes(searchInput) || usersData[i].role?.toLowerCase().includes(searchInput)){
           newArray.push(usersData[i]);
         }
-        console.log("searched");
       }
-      console.log("newArray",newArray)
       return newArray;
     }
-    console.log("searchinput",searchKeywords)
-    console.log(searchInput.length,"length");
     if(searchInput.length > 0){
       console.log("filteredUsers",filteredUsers(users));
       setUsers(filteredUsers(usersData)); // search in original whole data instead of
@@ -66,9 +60,11 @@ function UserList(searchKeywords, setSearchKeywords) {
 
   //check multiple users
   const handleChange=(e)=>{ 
-    const { name, checked}= e.target;
+    const { name, checked}= e.target; // name & checked is input box's name & checked
+    //check all
     if(name==="allselect"){
       const checkedvalue = users.map( (user,index)=>{
+        // check only the current page users and return other users as they are
         if(index >=startIndx && index < endIndx){
          return {...user, isChecked:checked}
         }
@@ -77,10 +73,12 @@ function UserList(searchKeywords, setSearchKeywords) {
       console.log(checkedvalue);
       setUsers(checkedvalue);
     } else{
-     const checkedvalue= users.map( (user)=>
-     user.name ===name? {...user, isChecked:checked}:user);
-     console.log(checkedvalue);
-     setUsers(checkedvalue);
+      // check individually
+      const checkedvalue= users.map( (user)=>
+        (user.name ===name)? {...user, isChecked:checked}:user
+      );
+      console.log(checkedvalue);
+      setUsers(checkedvalue);
     }
   }
 
@@ -98,22 +96,19 @@ function UserList(searchKeywords, setSearchKeywords) {
   
 
   const totalRecords = users.length;
-  console.log("total records",totalRecords);
   const perPageRecords = 10;
-
   const totalPages = Math.ceil(totalRecords / perPageRecords);
   const [currentPage, setCurrentPage] = useState(1);
   const [startIndx, setStartIndx] = useState(0);
   const [endIndx, setEndIndx] = useState(perPageRecords-1);
 
+  //fn to update which page to display
   const setDisplayPage = (pageNo)=> {
     setCurrentPage(pageNo);
     setStartIndx((pageNo-1)*perPageRecords);
     setEndIndx(pageNo*perPageRecords-1);
 
   }
-
-  // console.log(totalPages, startIndx, endIndx);
 
   return (
     <div>
@@ -123,12 +118,12 @@ function UserList(searchKeywords, setSearchKeywords) {
         <>
           <table className='mx-3 my-3'>
             <thead>
-              <tr style={{display:'flex', justifyContent:'space-between', gap:'15rem'}}>
+              <tr style={{display:'flex', justifyContent:'space-between', gap:'9rem'}}>
                 <th><input type="checkbox" name="allselect" checked= { !users.slice(startIndx,endIndx).some( (user)=>user?.isChecked!==true)} onChange={ handleChange}  /> </th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>role</th>
-                <th>Action</th>
+                <th className='w-48'>Name</th>
+                <th className='w-48'>Email</th>
+                <th className='w-48'>role</th>
+                <th className='w-48'>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -139,7 +134,7 @@ function UserList(searchKeywords, setSearchKeywords) {
                  deleteCurrentUser= {deleteCurrentUser}
                  searchKeywords
                  setSearchKeywords
-                 handleChange= {handleChange}  // passing checked to individual components
+                 handleChange= {handleChange}  // passing checked to individual components to ckeck individually rows
                 //  handleDelete = {handleAllDelete}
                 />
               ))}
@@ -151,7 +146,7 @@ function UserList(searchKeywords, setSearchKeywords) {
             <Pagination 
               color='primary' 
               count={totalPages}
-              onChange={(event, value) => setDisplayPage(value)}
+              onChange={(event, value) => setDisplayPage(value)}   //value is the page no
             />
             </span>
           </div>
