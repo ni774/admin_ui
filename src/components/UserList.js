@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import User from './User';
+import UserTable from './UserTable';
 import Pagination from '@mui/material/Pagination';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,7 +27,6 @@ function UserList({ searchKeywords, usersData, elements }) {
   /****************get Notify when user perform any action  ************/
   const notifyDeleted = () => toast.success("Deleted");
   const notifyEdited = () => toast.success("Updated");
-
 
   const handleUserEdit = (id, updatedUser) => {
     setUsers(users.map(user => user.id === id ? updatedUser : user));
@@ -72,36 +71,15 @@ function UserList({ searchKeywords, usersData, elements }) {
 
   return (
     <div className="min-w-full">
-      <table className="mx-3 my-3 p-2">
-        <thead>
-          <tr className="flex justify-between gap-3">
-            <th>
-              <input
-                type="checkbox"
-                name="allselect"
-                checked={paginatedUsers.length > 0 && paginatedUsers.every(user => selectedUsers.includes(user))}
-                onChange={handleSelectAll}
-              />
-            </th>
-            {elements.map((element, i) => (
-              <th className="userlist_heading w-1/6" key={i}>{element}</th>
-            ))}
-            <th className="w-1/6 relative right-10">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedUsers.map(user => (
-            <User
-              key={user.id}
-              user={user}
-              onEdit={handleUserEdit}
-              onDelete={handleUserDelete}
-              onSelect={handleUserSelect}
-              isSelected={selectedUsers.includes(user)}
-            />
-          ))}
-        </tbody>
-      </table>
+      <UserTable
+        users={paginatedUsers}
+        elements={elements}
+        onSelectAll={handleSelectAll}
+        onUserSelect={handleUserSelect}
+        onUserEdit={handleUserEdit}
+        onUserDelete={handleUserDelete}
+        selectedUsers={selectedUsers}
+      />
       <div className="flex w-full">
         <button onClick={handleDeleteSelected} className="justify-start bg-red-500 m-3 rounded-xl p-1">Delete Selected</button>
         <ToastContainer />
