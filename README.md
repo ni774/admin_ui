@@ -26,7 +26,8 @@ In the project directory, you can run:
 ![image](https://github.com/ni774/admin_ui/assets/61626746/861d6705-8140-4fb2-b702-da1fce03f4f2)
 
 ### Delete All or Delete by selecetion
-![image](https://github.com/ni774/admin_ui/assets/61626746/5521ea8b-e53e-4858-a3f7-d27fe409d673)
+![image](https://github.com/ni774/admin_ui/assets/61626746/2fc8aab7-97f8-4c62-816a-9584bf7a938d)
+
 
 
 
