@@ -28,6 +28,10 @@ In the project directory, you can run:
 ### Delete All or Delete by selecetion
 ![image](https://github.com/ni774/admin_ui/assets/61626746/2fc8aab7-97f8-4c62-816a-9584bf7a938d)
 
+### Edit user
+![image](https://github.com/ni774/admin_ui/assets/61626746/de7c360e-a179-4f57-a4a0-6b8bcef2f099)
+
+
 
 
 
