@@ -1,157 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import Users from './Users';
+import User from './User';
 import Pagination from '@mui/material/Pagination';
-import { usePagination } from '../hooks/Pagination';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../style/userlist.css';
 
-
-import usersData from '../data';
-
-function UserList(searchKeywords, setSearchKeywords) {
+function UserList({ searchKeywords, usersData, elements }) {
   const [users, setUsers] = useState(usersData);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // update users data to user list
-  const edit = (id,name,email,role)=> {
-    console.log("edited",id);
-    const newUsers = users.map((currElement) => {
-        if (currElement.id === id) {
-            return { ...currElement,
-              name: name,
-              email: email,
-              role: role,
-            };
-        } else {
-            return currElement;
-        }
-    });
-    // console.log("newUsers",newUsers);
-    setUsers(newUsers);
-  }
-
-  // console.log("filteredUsers",filteredUsers);
-
-  const deleteCurrentUser = async (id) => {
-    console.log("deleteCurrentUser",id);
-    const updatedUsers = users.filter((user) => user.id !== id);
-    console.log("updatedUsers after delete",updatedUsers);
-    setUsers(updatedUsers);
-  }
-
-  
- //...........................SEARCH FUNCTIONALITY.................. 
-  useEffect(()=>{
-    const searchInput = searchKeywords.searchKeywords.toLowerCase();
-    const filteredUsers = (usersData) => {
-      let newArray = [];
-      for(let i=0;i<usersData.length;i++) {
-        if(usersData[i].name?.toLowerCase().includes(searchInput) || usersData[i].email?.toLowerCase().includes(searchInput) || usersData[i].role?.toLowerCase().includes(searchInput)){
-          newArray.push(usersData[i]);
-        }
-      }
-      return newArray;
-    }
-    if(searchInput.length > 0){
-      console.log("filteredUsers",filteredUsers(users));
-      setUsers(filteredUsers(usersData)); // search in original whole data instead of
-      //setUsers(filteredUsers(usersData));
-    }
-  },[searchKeywords.searchKeywords.length])
-    
-
-  //check multiple users
-  const handleChange=(e)=>{ 
-    const { name, checked}= e.target; // name & checked is input box's name & checked
-    //check all
-    if(name==="allselect"){
-      const checkedvalue = users.map( (user,index)=>{
-        // check only the current page users and return other users as they are
-        if(index >=startIndx && index < endIndx){
-         return {...user, isChecked:checked}
-        }
-        else return user;
-      });
-      console.log(checkedvalue);
-      setUsers(checkedvalue);
-    } else{
-      // check individually
-      const checkedvalue= users.map( (user)=>
-        (user.name ===name)? {...user, isChecked:checked}:user
-      );
-      console.log(checkedvalue);
-      setUsers(checkedvalue);
-    }
-  }
-
-  //delete all user which are checked
-  const handleAllDelete = async (e) => {
-    e.preventDefault();
-    const newUsers = users.filter(user => !user.isChecked);
-    if (newUsers.length < users.length) {
-        setUsers(newUsers);
-    } else {
-        alert("Please select at least one checkbox");
-    }
-  }
-  
-  
-
-  const totalRecords = users.length;
-  const perPageRecords = 10;
-  const totalPages = Math.ceil(totalRecords / perPageRecords);
   const [currentPage, setCurrentPage] = useState(1);
-  const [startIndx, setStartIndx] = useState(0);
-  const [endIndx, setEndIndx] = useState(perPageRecords-1);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  //fn to update which page to display
-  const setDisplayPage = (pageNo)=> {
-    setCurrentPage(pageNo);
-    setStartIndx((pageNo-1)*perPageRecords);
-    setEndIndx(pageNo*perPageRecords-1);
+  useEffect(() => {
+    const searchingKeyword = searchKeywords.toLowerCase();
+    if (searchingKeyword.length > 0) {
+      const filteredUsers = usersData.filter(user =>
+        user.name.toLowerCase().includes(searchingKeyword) ||
+        user.email.toLowerCase().includes(searchingKeyword) ||
+        user.role.toLowerCase().includes(searchingKeyword)
+      );
+      setUsers(filteredUsers);
+    } else {
+      setUsers(usersData);
+    }
+  }, [searchKeywords, usersData]);
 
-  }
+  /****************get Notify when user perform any action  ************/
+  const notifyDeleted = () => toast.success("Deleted");
+  const notifyEdited = () => toast.success("Updated");
+
+
+  const handleUserEdit = (id, updatedUser) => {
+    setUsers(users.map(user => user.id === id ? updatedUser : user));
+    notifyEdited();
+  };
+
+  const handleUserDelete = (id) => {
+    setUsers(users.filter(user => user.id !== id));
+    notifyDeleted();
+  };
+
+  const handleSelectAll = (e) => {
+    const { checked } = e.target;
+    const newSelectedUsers = checked ? users.slice(startIndex, endIndex) : [];
+    setSelectedUsers(newSelectedUsers);
+  };
+
+  const handleUserSelect = (selectedUser) => {
+    const isSelected = selectedUsers.some(user => user.id === selectedUser.id);
+    if (isSelected) {
+      setSelectedUsers(selectedUsers.filter(user => user.id !== selectedUser.id));
+    } else {
+      setSelectedUsers([...selectedUsers, selectedUser]);
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedUsers.length === 0) {
+      alert("Please select at least one user to delete");
+    } else {
+      setUsers(users.filter(user => !selectedUsers.includes(user)));
+      setSelectedUsers([]);
+      notifyDeleted();
+    }
+  };
+
+  const PER_PAGE = 10;
+  const startIndex = (currentPage - 1) * PER_PAGE;
+  const endIndex = startIndex + PER_PAGE;
+  const paginatedUsers = users.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(users.length / PER_PAGE);
 
   return (
-    <div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <table className='mx-3 my-3'>
-            <thead>
-              <tr style={{display:'flex', justifyContent:'space-between', gap:'9rem'}}>
-                <th><input type="checkbox" name="allselect" checked= { !users.slice(startIndx,endIndx).some( (user)=>user?.isChecked!==true)} onChange={ handleChange}  /> </th>
-                <th className='w-48'>Name</th>
-                <th className='w-48'>Email</th>
-                <th className='w-48'>role</th>
-                <th className='w-48'>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.slice(startIndx, endIndx).map((user, i) => (
-                <Users key={i}
-                 user={user}
-                 editcurrentUser={edit}
-                 deleteCurrentUser= {deleteCurrentUser}
-                 searchKeywords
-                 setSearchKeywords
-                 handleChange= {handleChange}  // passing checked to individual components to ckeck individually rows
-                //  handleDelete = {handleAllDelete}
-                />
-              ))}
-            </tbody>
-          </table>
-          <div style={{display:'flex', justifyContent:'flex-start'}}>
-            <button onClick={handleAllDelete} className='bg-red-500 m-3 rounded-xl p-1'>Delete Selected</button>
-            <span style={{margin:'auto'}}>
-            <Pagination 
-              color='primary' 
-              count={totalPages}
-              onChange={(event, value) => setDisplayPage(value)}   //value is the page no
+    <div className="min-w-full">
+      <table className="mx-3 my-3 p-2">
+        <thead>
+          <tr className="flex justify-between gap-3">
+            <th>
+              <input
+                type="checkbox"
+                name="allselect"
+                checked={paginatedUsers.length > 0 && paginatedUsers.every(user => selectedUsers.includes(user))}
+                onChange={handleSelectAll}
+              />
+            </th>
+            {elements.map((element, i) => (
+              <th className="userlist_heading w-1/6" key={i}>{element}</th>
+            ))}
+            <th className="w-1/6 relative right-10">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedUsers.map(user => (
+            <User
+              key={user.id}
+              user={user}
+              onEdit={handleUserEdit}
+              onDelete={handleUserDelete}
+              onSelect={handleUserSelect}
+              isSelected={selectedUsers.includes(user)}
             />
-            </span>
-          </div>
-        </>
-      )}
+          ))}
+        </tbody>
+      </table>
+      <div className="flex w-full">
+        <button onClick={handleDeleteSelected} className="justify-start bg-red-500 m-3 rounded-xl p-1">Delete Selected</button>
+        <ToastContainer />
+        <div className="justify-center m-auto">
+          <Pagination
+            color="primary"
+            count={totalPages}
+            page={currentPage}
+            onChange={(e, page) => setCurrentPage(page)}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,12 @@
+/* for mobile */
+@media  only screen and (max-width: 600px){
+    input{
+        font-size: x-large;
+    }
+    tr{
+        gap: 5rem;
+    }
+    .row{
+        margin-top: 10px;
+    }
+}
