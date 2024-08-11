@@ -1,15 +1,6 @@
 Deployed link:
 https://nikadminui.netlify.app/
 
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## node version 18 or above would be best
-
-## for the project, `npm install` and you are ready to start
-
-## Available Scripts
 
 In the project directory, you can run:
 
